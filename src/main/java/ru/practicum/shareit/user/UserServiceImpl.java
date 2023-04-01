@@ -22,7 +22,6 @@ public class UserServiceImpl implements UserService {
                     String.format("Пользователь с email [%s] уже существует.", user.getEmail()));
         }
 
-
         return userRepository.saveUser(user);
     }
 
@@ -44,7 +43,7 @@ public class UserServiceImpl implements UserService {
             user.setEmail(userDto.getEmail());
         }
 
-        if(userDto.getName() != null) {
+        if (userDto.getName() != null) {
             user.setName(userDto.getName());
         }
 

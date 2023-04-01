@@ -48,7 +48,7 @@ public class ItemServiceImpl implements ItemService {
             item.setDescription(itemDto.getDescription());
         }
 
-        if (itemDto.getAvailable() != null){
+        if (itemDto.getAvailable() != null) {
             item.setAvailable(itemDto.getAvailable());
         }
 
@@ -67,7 +67,7 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public List<ItemDto> getItemBySearch(String text) {
-        if(text.isBlank()) {
+        if (text.isBlank()) {
             return List.of();
         }
 

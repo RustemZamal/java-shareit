@@ -11,15 +11,16 @@ import java.util.Objects;
 
 @RestControllerAdvice
 public class ErrorHandler {
+
     @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ErrorResponse handleMethodArgumentNotValidException(final MethodArgumentNotValidException ex){
+    public ErrorResponse handleMethodArgumentNotValidException(final MethodArgumentNotValidException ex) {
         return new ErrorResponse(Objects.requireNonNull(ex.getFieldError()).getDefaultMessage());
     }
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ErrorResponse handleInvalidException(final InvalidDataException ex){
+    public ErrorResponse handleInvalidException(final InvalidDataException ex) {
         return new ErrorResponse(ex.getMessage());
     }
 
@@ -34,7 +35,7 @@ public class ErrorHandler {
     public ErrorResponse handleElementAlreadyExistsException(final ElementAlreadyExistsException ex) {
         return new ErrorResponse(ex.getMessage());
     }
-    
+
     @ExceptionHandler
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ErrorResponse handleThrowableException(final Throwable ex) {
