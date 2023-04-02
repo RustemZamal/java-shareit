@@ -5,9 +5,11 @@ import org.springframework.stereotype.Service;
 import ru.practicum.shareit.exceptions.ElementAlreadyExistsException;
 import ru.practicum.shareit.exceptions.NotFoundException;
 import ru.practicum.shareit.user.dto.UserDto;
+import ru.practicum.shareit.user.dto.UserMapper;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -16,21 +18,19 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
 
     @Override
-    public User createUser(User user) {
-        if (userRepository.findAllUsers().stream().anyMatch(u -> u.getEmail().equals(user.getEmail()))) {
+    public UserDto createUser(UserDto userDto) {
+        if (userRepository.findAllUsers().stream().anyMatch(u -> u.getEmail().equals(userDto.getEmail()))) {
             throw new ElementAlreadyExistsException(
-                    String.format("Пользователь с email [%s] уже существует.", user.getEmail()));
+                    String.format("Пользователь с email [%s] уже существует.", userDto.getEmail()));
         }
 
-        return userRepository.saveUser(user);
+        return UserMapper.toUserDto(userRepository.saveUser(UserMapper.toUser(userDto)));
     }
 
     @Override
-    public User updateUser(UserDto userDto, Long userId) {
-        User user = userRepository.findUserById(userId);
-        if (user == null) {
-            throw new NotFoundException(String.format("Пользователь с ID=%d не наыйдет", userId));
-        }
+    public UserDto updateUser(UserDto userDto, Long userId) {
+        User user = userRepository.findUserById(userId)
+                .orElseThrow(() -> new NotFoundException(String.format("Пользователь с ID=%d не наыйден!", userId)));
 
         boolean isEmailDuplicated = userRepository.findAllUsers()
                 .stream().anyMatch(u -> u.getEmail().equals(userDto.getEmail()) && !Objects.equals(u.getId(), userId));
@@ -47,17 +47,21 @@ public class UserServiceImpl implements UserService {
             user.setName(userDto.getName());
         }
 
-        return userRepository.updateUser(user);
+        return UserMapper.toUserDto(userRepository.updateUser(user));
     }
 
     @Override
-    public User getUserById(Long userId) {
-        return userRepository.findUserById(userId);
+    public UserDto getUserById(Long userId) {
+        return UserMapper.toUserDto(userRepository.findUserById(userId)
+                .orElseThrow(() -> new NotFoundException(String.format("Пользователь с ID=%d не найден!", userId))));
     }
 
     @Override
-    public List<User> getAllUsers() {
-        return userRepository.findAllUsers();
+    public List<UserDto> getAllUsers() {
+        return userRepository.findAllUsers()
+                .stream()
+                .map(UserMapper::toUserDto)
+                .collect(Collectors.toList());
     }
 
     @Override

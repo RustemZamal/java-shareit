@@ -24,41 +24,41 @@ public class UserController {
 
     /**
      * Эндпоинт по созданию пользователя.
-     * @param user обьек пользовател.
-     * @return Возварещает созданаго польлзователя.
+     * @param userDto обьек пользовател.
+     * @return Возварещает созданного польлзователя.
      */
     @PostMapping
-    public User creatUser(@Valid @RequestBody User user) {
-        return userService.createUser(user);
+    public UserDto creatUser(@Valid @RequestBody UserDto userDto) {
+        return userService.createUser(userDto);
     }
 
     /**
      * Эндпонит по изменению пользователя.
      * @param userDto обьект с полями/полям, котрые будут изменены.
      * @param userId идентификатор пользователя, который будет изменет.
-     * @return Возварщает изменного пользователя.
+     * @return Возварщает измененного пользователя.
      */
     @PatchMapping("/{userId}")
-    public User updateUser(@Valid @RequestBody UserDto userDto, @PathVariable Long userId) {
+    public UserDto updateUser(@RequestBody UserDto userDto, @PathVariable Long userId) {
         return userService.updateUser(userDto, userId);
     }
 
     /**
      * Энодпоинт по нахожднию пользователя по его идентификатору.
      * @param userId идентификатор пользователя.
-     * @return Возварщает пользователя по его идентификатор
+     * @return Возварщает пользователя по его идентификатору
      */
     @GetMapping("/{userId}")
-    public User getUserById(@PathVariable Long userId) {
+    public UserDto getUserById(@PathVariable Long userId) {
         return userService.getUserById(userId);
     }
 
     /**
-     * Эндпоинт возвращает всех пользователей.
+     * Эндпоинт по нахождению всех пользователей.
      * @return Возвращает список всех пользователей.
      */
     @GetMapping
-    public List<User> getAllUsers() {
+    public List<UserDto> getAllUsers() {
         return userService.getAllUsers();
     }
 

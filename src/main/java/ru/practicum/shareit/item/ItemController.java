@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import ru.practicum.shareit.item.dto.ItemDto;
-import ru.practicum.shareit.item.model.Item;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -32,7 +31,7 @@ public class ItemController {
      * @return Возвращает объект, котрый добавил пользватель.
      */
     @PostMapping
-    public Item addNewItem(@RequestHeader("X-Sharer-User-Id") Long userId,  @RequestBody @Valid ItemDto itemDto) {
+    public ItemDto addNewItem(@RequestHeader("X-Sharer-User-Id") Long userId,  @RequestBody @Valid ItemDto itemDto) {
         return itemService.addNewItem(userId, itemDto);
     }
 
@@ -44,14 +43,14 @@ public class ItemController {
      * @return Возвращает объект, котрый обновил пользватель.
      */
     @PatchMapping("/{itemId}")
-    public Item updateItem(@RequestHeader("X-Sharer-User-Id") Long userId,
+    public ItemDto updateItem(@RequestHeader("X-Sharer-User-Id") Long userId,
                            @PathVariable Long itemId,
                            @RequestBody ItemDto itemDto) {
         return itemService.updateItem(userId, itemId, itemDto);
     }
 
     /**
-     * Эндпоитн по поиску предмета по индефикатору.
+     * Эндпоинт по поиску предмета по индефикатору.
      * @param itemId индефикатор предмета
      * @return Возвращает предмет по его идентификатору.
      */
@@ -61,7 +60,7 @@ public class ItemController {
     }
 
     /**
-     * Эндпоитн по поиску предмета по тексту.
+     * Эндпоинт по поиску предмета по тексту.
      * @param text текст запроса.
      * @return Возвращает предмет.
      */
@@ -76,7 +75,7 @@ public class ItemController {
      * @return Возвращает предмет.
      */
     @GetMapping
-    public List<Item> getItemByUserId(@RequestHeader("X-Sharer-User-Id") Long userId) {
+    public List<ItemDto> getItemByUserId(@RequestHeader("X-Sharer-User-Id") Long userId) {
         return itemService.getItemByUserId(userId);
     }
 }

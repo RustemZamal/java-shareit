@@ -3,8 +3,10 @@ package ru.practicum.shareit.item;
 import org.springframework.stereotype.Repository;
 import ru.practicum.shareit.item.model.Item;
 
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Repository
 public class ItemRepositoryImpl implements ItemRepository {
@@ -29,14 +31,6 @@ public class ItemRepositoryImpl implements ItemRepository {
     @Override
     public Item findItemById(Long id) {
         return items.get(id);
-    }
-
-    @Override
-    public List<Item> findItemByUserId(Long userId) {
-        return items.values()
-                .stream()
-                .filter(item -> Objects.equals(item.getOwner(), userId))
-                .collect(Collectors.toList());
     }
 
     @Override

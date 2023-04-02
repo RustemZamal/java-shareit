@@ -10,6 +10,7 @@ import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.UserService;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -21,17 +22,17 @@ public class ItemServiceImpl implements ItemService {
     private  final UserService userService;
 
     @Override
-    public Item addNewItem(Long userId, ItemDto itemDto) {
+    public ItemDto addNewItem(Long userId, ItemDto itemDto) {
         validateItem(userId);
 
         Item item = ItemMapper.toItem(itemDto);
         item.setOwner(userId);
 
-        return itemRepository.saveItem(item);
+        return ItemMapper.toItemDto(itemRepository.saveItem(item));
     }
 
     @Override
-    public Item updateItem(Long userId, Long itemId, ItemDto itemDto) {
+    public ItemDto updateItem(Long userId, Long itemId, ItemDto itemDto) {
         Item item = itemRepository.findItemById(itemId);
 
         validateItem(userId);
@@ -52,7 +53,7 @@ public class ItemServiceImpl implements ItemService {
             item.setAvailable(itemDto.getAvailable());
         }
 
-        return itemRepository.updateItem(item);
+        return ItemMapper.toItemDto(itemRepository.updateItem(item));
     }
 
     @Override
@@ -61,8 +62,12 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public List<Item> getItemByUserId(Long userId) {
-        return itemRepository.findItemByUserId(userId);
+    public List<ItemDto> getItemByUserId(Long userId) {
+        return itemRepository.findAllItems()
+                .stream()
+                .filter(item -> Objects.equals(item.getOwner(), userId))
+                .map(ItemMapper::toItemDto)
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -85,8 +90,6 @@ public class ItemServiceImpl implements ItemService {
             throw new InvalidDataException("id пользователя не указан.");
         }
 
-        if (userService.getUserById(userId) == null) {
-            throw new NotFoundException(String.format("Пользователь с ID=%d не найден!", userId));
-        }
+        userService.getUserById(userId);
     }
 }

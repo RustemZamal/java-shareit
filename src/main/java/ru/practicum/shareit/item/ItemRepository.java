@@ -12,7 +12,5 @@ public interface ItemRepository {
 
     Item findItemById(Long id);
 
-    List<Item> findItemByUserId(Long userId);
-
     List<Item> findAllItems();
 }
