@@ -2,7 +2,6 @@ package ru.practicum.shareit.item.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import ru.practicum.shareit.booking.dto.BookingDto;
 
 import java.util.List;
 
@@ -23,4 +22,13 @@ public class ItemAllFieldsDto {
     private final BookingDto nextBooking;
 
     private List<CommentDto> comments;
+
+    @Data
+    @AllArgsConstructor
+    public static class BookingDto {
+
+        private Long id;
+
+        private Long bookerId;
+    }
 }

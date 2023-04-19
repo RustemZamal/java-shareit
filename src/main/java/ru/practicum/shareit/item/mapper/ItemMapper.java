@@ -2,7 +2,6 @@ package ru.practicum.shareit.item.mapper;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.ItemAllFieldsDto;
@@ -32,8 +31,8 @@ public class ItemMapper {
                 item.getName(),
                 item.getDescription(),
                 item.getAvailable(),
-                last != null ? new BookingDto(last.getId(), last.getBooker().getId()) : null,
-                next != null ? new BookingDto(next.getId(), next.getBooker().getId()) : null,
+                last != null ? new ItemAllFieldsDto.BookingDto(last.getId(), last.getBooker().getId()) : null,
+                next != null ? new ItemAllFieldsDto.BookingDto(next.getId(), next.getBooker().getId()) : null,
                 comments != null ? comments : List.of());
     }
 

@@ -38,6 +38,6 @@ CREATE TABLE IF NOT EXISTS bookings (
     end_date TIMESTAMP WITHOUT TIME ZONE NOT NULL,
     item_id BIGINT REFERENCES items(id) ON DELETE CASCADE,
     booker_id BIGINT REFERENCES users(id) ON DELETE CASCADE,
-    status VARCHAR(15)
+    status VARCHAR(15) NOT NULL
 );
 

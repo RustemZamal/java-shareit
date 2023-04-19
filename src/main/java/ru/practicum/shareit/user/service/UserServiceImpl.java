@@ -1,10 +1,9 @@
 package ru.practicum.shareit.user.service;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.dao.DataIntegrityViolationException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.practicum.shareit.exceptions.ElementAlreadyExistsException;
 import ru.practicum.shareit.exceptions.NotFoundException;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.mapper.UserMapper;
@@ -15,22 +14,17 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
-
     @Override
     @Transactional
     public UserDto createUser(UserDto userDto) {
-        try {
-            return UserMapper.mapToUserDto(userRepository.save(UserMapper.mapToUser(userDto)));
-        } catch (DataIntegrityViolationException ex) {
-                throw new ElementAlreadyExistsException(String.format(
-                        "User with email [%s] already exists", userDto.getEmail()));
-        }
+        return UserMapper.mapToUserDto(userRepository.save(UserMapper.mapToUser(userDto)));
     }
 
     @Override
@@ -47,12 +41,7 @@ public class UserServiceImpl implements UserService {
             user.setName(userDto.getName());
        }
 
-       try {
-            return UserMapper.mapToUserDto(userRepository.save(user));
-       } catch (DataIntegrityViolationException ex) {
-                throw new ElementAlreadyExistsException(String.format(
-                        "User with email [%s] already exists", userDto.getEmail()));
-       }
+        return UserMapper.mapToUserDto(userRepository.save(user));
     }
 
     @Override
