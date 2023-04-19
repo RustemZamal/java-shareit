@@ -1,7 +1,13 @@
 package ru.practicum.shareit.booking.dto;
 
-/**
- * TODO Sprint add-bookings.
- */
+import lombok.AllArgsConstructor;
+import lombok.Data;
+
+@Data
+@AllArgsConstructor
 public class BookingDto {
+
+    private final Long id;
+
+    private final Long bookerId;
 }

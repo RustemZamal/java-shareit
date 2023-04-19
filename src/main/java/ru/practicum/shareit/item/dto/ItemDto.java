@@ -9,18 +9,18 @@ import javax.validation.constraints.NotNull;
 
 @Data
 @AllArgsConstructor
-public class ItemDto {
+public final class ItemDto {
 
-    private Long id;
+    private final Long id;
 
-    @NotBlank(message = "Название не может быть пустым!")
-    private String name;
+    @NotBlank(message = "The name cannot be empty!")
+    private final String name;
 
-    @NotBlank(message = "Описание не может быть пустым!")
-    private String description;
+    @NotBlank(message = "The description cannot be empty!")
+    private final String description;
 
-    @NotNull(message = "Статус о том дуоступен ли товар или нет не должен быть пустым!")
-    private Boolean available;
+    @NotNull(message = "The status of whether the product is available or not should not be empty!")
+    private final Boolean available;
 
-    private Long requestId;
+    private final Long requestId;
 }

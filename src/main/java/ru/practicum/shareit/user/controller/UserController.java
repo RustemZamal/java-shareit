@@ -1,4 +1,4 @@
-package ru.practicum.shareit.user;
+package ru.practicum.shareit.user.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import ru.practicum.shareit.user.service.UserService;
 import ru.practicum.shareit.user.dto.UserDto;
 
 import javax.validation.Valid;
@@ -25,7 +26,7 @@ public class UserController {
     /**
      * Эндпоинт по созданию пользователя.
      * @param userDto обьек пользовател.
-     * @return Возварещает созданного польлзователя.
+     * @return Возвращает созданного польлзователя.
      */
     @PostMapping
     public UserDto creatUser(@Valid @RequestBody UserDto userDto) {
