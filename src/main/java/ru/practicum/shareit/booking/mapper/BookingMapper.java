@@ -11,7 +11,7 @@ import ru.practicum.shareit.user.mapper.UserMapper;
 import java.util.ArrayList;
 import java.util.List;
 
-@NoArgsConstructor(access = AccessLevel.PRIVATE )
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class BookingMapper {
     public static Booking mapToBooking(BookingSavingDto bookingSavingDto) {
         Booking booking = new Booking();

@@ -62,7 +62,7 @@ public class BookingController {
     @GetMapping("/{bookingId}")
     public BookingAllFieldsDto getBookingById(
             @RequestHeader("X-Sharer-User-Id") Long userId,
-            @PathVariable Long bookingId ) {
+            @PathVariable Long bookingId) {
         return bookingService.getBookingById(userId, bookingId);
     }
 
@@ -75,7 +75,7 @@ public class BookingController {
     @GetMapping
     public List<BookingAllFieldsDto> getBookingsByUBooker(
             @RequestHeader("X-Sharer-User-Id") Long bookerId,
-            @RequestParam(required = false, defaultValue = "ALL") String state){
+            @RequestParam(required = false, defaultValue = "ALL") String state) {
         return bookingService.getBookingsByBookerId(bookerId, state);
     }
 
