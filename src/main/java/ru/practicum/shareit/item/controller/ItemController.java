@@ -1,4 +1,4 @@
-package ru.practicum.shareit.item;
+package ru.practicum.shareit.item.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -10,6 +10,9 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import ru.practicum.shareit.item.dto.CommentDto;
+import ru.practicum.shareit.item.dto.ItemAllFieldsDto;
+import ru.practicum.shareit.item.service.ItemService;
 import ru.practicum.shareit.item.dto.ItemDto;
 
 import javax.validation.Valid;
@@ -36,6 +39,21 @@ public class ItemController {
     }
 
     /**
+     * Эндпонит по соэданию комментария.
+     * @param bookerId id пользавателя.
+     * @param itemId объект товар, которому оставляется комментарий.
+     * @param commentDto комментарий.
+     * @return Возвращает объкт комментария.
+     */
+    @PostMapping("/{itemId}/comment")
+    public CommentDto addNewComment(
+            @RequestHeader("X-Sharer-User-Id") Long bookerId,
+            @PathVariable Long itemId,
+            @RequestBody @Valid CommentDto commentDto) {
+        return itemService.addNewComment(bookerId, itemId, commentDto);
+    }
+
+    /**
      * Эндпоинт по обновлениб предмета.
      * @param userId индефикатор пользователя
      * @param itemId идентификатор предмета
@@ -43,9 +61,10 @@ public class ItemController {
      * @return Возвращает объект, котрый обновил пользватель.
      */
     @PatchMapping("/{itemId}")
-    public ItemDto updateItem(@RequestHeader("X-Sharer-User-Id") Long userId,
-                           @PathVariable Long itemId,
-                           @RequestBody ItemDto itemDto) {
+    public ItemDto updateItem(
+            @RequestHeader("X-Sharer-User-Id") Long userId,
+            @PathVariable Long itemId,
+            @RequestBody ItemDto itemDto) {
         return itemService.updateItem(userId, itemId, itemDto);
     }
 
@@ -55,8 +74,10 @@ public class ItemController {
      * @return Возвращает предмет по его идентификатору.
      */
     @GetMapping("/{itemId}")
-    public ItemDto getItemById(@PathVariable Long itemId) {
-        return itemService.getItemById(itemId);
+    public ItemAllFieldsDto getItemById(
+            @RequestHeader("X-Sharer-User-Id") Long ownerId,
+            @PathVariable Long itemId) {
+        return itemService.getItemById(itemId, ownerId);
     }
 
     /**
@@ -75,7 +96,7 @@ public class ItemController {
      * @return Возвращает предмет.
      */
     @GetMapping
-    public List<ItemDto> getItemByUserId(@RequestHeader("X-Sharer-User-Id") Long userId) {
+    public List<ItemAllFieldsDto> getItemByUserId(@RequestHeader("X-Sharer-User-Id") Long userId) {
         return itemService.getItemByUserId(userId);
     }
 }
