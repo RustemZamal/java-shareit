@@ -103,7 +103,6 @@ public class ItemServiceImpl implements ItemService {
                 .orElseThrow(() -> new NotFoundException(String.format("Item with ID=%d was not found!", id)));
     }
 
-
     @Override
     public List<ItemAllFieldsDto> getItemByUserId(Long userId, Pageable pageable) {
         List<Item> items = itemRepository.findAllByOwnerIdOrderById(userId, pageable);

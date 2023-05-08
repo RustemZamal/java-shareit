@@ -33,6 +33,7 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.Mockito.anyLong;
 import static org.mockito.Mockito.anyString;
 import static org.mockito.Mockito.never;
@@ -105,12 +106,12 @@ class ItemServiceImplUnitTest {
             1L,
             "Add comment from user1",
             "Mike",
-            LocalDateTime.of(2023, 5, 5,17,11, 30));
+            LocalDateTime.of(2023, 5, 5, 17, 11, 30));
 
     private final Booking booking = new Booking(
             1L,
-            LocalDateTime.of(2023, 5, 2,17,11, 30),
-            LocalDateTime.of(2023, 5, 5,8,0, 10),
+            LocalDateTime.of(2023, 5, 2, 17, 11, 30),
+            LocalDateTime.of(2023, 5, 5, 8, 0, 10),
             item,
             user,
             BookingStatus.APPROVED);
@@ -121,7 +122,7 @@ class ItemServiceImplUnitTest {
     @Test
     void addNewItem() {
         Item item = new Item(1L,
-                user,"Аккумуляторная дрель",
+                user, "Аккумуляторная дрель",
                 "Аккумуляторная дрель + аккумулятор",
                 true,
                 itemRequest);
@@ -173,6 +174,28 @@ class ItemServiceImplUnitTest {
     }
 
     /**
+     * Method under test: {@link ItemServiceImpl#updateItem(Long, Long, ItemDto)}
+     */
+    @Test
+    void updateItem_whenItemDonBelongToOwner_thenThrowNotFoundException() {
+        ItemDto newItem = new ItemDto(
+                1L,
+                "Новая дрель",
+                "Аккумуляторная дрель",
+                true,
+                2L);
+        String message = "Вещь с ID=1 не принадлежит пользователю с ID=2";
+        Long wrongUserId = 2L;
+        when(itemRepository.findById(anyLong())).thenReturn(Optional.of(item));
+
+        NotFoundException exception = assertThrows(NotFoundException.class,
+                () -> itemService.updateItem(wrongUserId, itemId, newItem));
+        assertEquals(message, exception.getMessage());
+        verify(itemRepository, never()).save(itemArgumentCaptor.capture());
+    }
+
+
+    /**
      * Method under test: {@link ItemServiceImpl#getItemById(Long, Long)}
      */
     @Test
@@ -211,8 +234,14 @@ class ItemServiceImplUnitTest {
     @Test
     void getItemByUserId() {
         when(itemRepository.findAllByOwnerIdOrderById(anyLong(), any(Pageable.class))).thenReturn(List.of(item));
+        when(commentRepository.findByItemIdInOrderByItemId(anyList())).thenReturn(List.of(comment));
+        when(bookingRepository
+                .findAllByItemOwnerIdAndStatusNotOrderByStartDesc(
+                        anyLong(), any(BookingStatus.class)))
+                .thenReturn(List.of(booking));
 
         List<ItemAllFieldsDto> actualItems = itemService.getItemByUserId(userId, new OffsetPageRequest(0, 2));
+
 
         assertEquals(1, actualItems.size());
         assertEquals(item.getId(), actualItems.get(0).getId());
@@ -241,7 +270,7 @@ class ItemServiceImplUnitTest {
      */
     @Test
     void addNewComment() {
-        when(bookingRepository.findDistinctBookingByBookerIdAndItemId(anyLong(),anyLong())).thenReturn(List.of(booking));
+        when(bookingRepository.findDistinctBookingByBookerIdAndItemId(anyLong(), anyLong())).thenReturn(List.of(booking));
         when(commentRepository.save(any())).thenReturn(comment);
 
         CommentDto actualComment = itemService.addNewComment(userId, itemId, commentDto);

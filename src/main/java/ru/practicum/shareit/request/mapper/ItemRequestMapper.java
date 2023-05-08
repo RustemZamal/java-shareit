@@ -28,12 +28,4 @@ public class ItemRequestMapper {
                 itemRequest.getCreated(),
                 items);
     }
-
-    public static ItemRequestDto mapToItemRequestDto(ItemRequest itemRequest) {
-        return new ItemRequestDto(
-                itemRequest.getId(),
-                itemRequest.getDescription(),
-                itemRequest.getCreated(),
-                List.of());
-    }
 }

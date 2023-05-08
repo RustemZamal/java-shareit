@@ -13,6 +13,7 @@ import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.model.BookingStatus;
 import ru.practicum.shareit.booking.repository.BookingRepository;
 import ru.practicum.shareit.exceptions.InvalidDataException;
+import ru.practicum.shareit.exceptions.NotFoundException;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.service.ItemServiceImpl;
@@ -31,6 +32,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 
@@ -97,7 +100,7 @@ class BookingServiceImplUnitTest {
                 request.getId());
 
         bookingSaving = new BookingSavingDto(
-                null,
+                1L,
                 LocalDateTime.of(2022, 5, 7, 12, 0),
                 LocalDateTime.of(2022, 5, 9, 10, 0),
                 item.getId(),
@@ -107,7 +110,7 @@ class BookingServiceImplUnitTest {
         bookingAllFields = new BookingAllFieldsDto(
                 1L,
                 LocalDateTime.of(2022, 5, 7, 12, 0),
-                LocalDateTime.of(2022,5, 9, 10, 0),
+                LocalDateTime.of(2022, 5, 9, 10, 0),
                 "APPROVED",
                 userDto,
                 itemDto);
@@ -137,6 +140,82 @@ class BookingServiceImplUnitTest {
     }
 
     /**
+     * Method under test: {@link BookingService#saveBooking(Long, BookingSavingDto)}
+     */
+    @Test
+    void saveBooking_whenItemUnavailable_thenThrowInvalidDataException() {
+        Item unavailableItem = new Item();
+        unavailableItem.setAvailable(false);
+        unavailableItem.setDescription("Аккумуляторная дрель + аккумулятор");
+        unavailableItem.setId(1L);
+        unavailableItem.setName("Аккумуляторная дрель");
+        unavailableItem.setOwner(user);
+        unavailableItem.setRequest(request);
+        when(itemService.getItemByIdAllField(anyLong())).thenReturn(unavailableItem);
+        when(userService.getUserById(anyLong())).thenReturn(userDto);
+
+        InvalidDataException exception = assertThrows(InvalidDataException.class,
+                () -> bookingService.saveBooking(userId, bookingSaving));
+        assertEquals("The item with ID=1 cannot be booked because it is not available!", exception.getMessage());
+        verify(bookingRepository, never()).save(booking);
+    }
+
+
+    /**
+     * Method under test: {@link BookingService#saveBooking(Long, BookingSavingDto)}
+     */
+    @Test
+    void saveBooking_whenEndDateBeforeStart_thenThrowInvalidDataException() {
+        BookingSavingDto invalidDateBooking = new BookingSavingDto(
+                null,
+                LocalDateTime.of(2022, 5, 7, 12, 0),
+                LocalDateTime.of(2022, 5, 6, 10, 0),
+                item.getId(),
+                user.getId(),
+                null);
+        when(itemService.getItemByIdAllField(anyLong())).thenReturn(item);
+        when(userService.getUserById(anyLong())).thenReturn(userDto);
+
+        InvalidDataException exception = assertThrows(InvalidDataException.class,
+                () -> bookingService.saveBooking(userId, invalidDateBooking));
+        assertEquals("The booking end date cannot be before the booking start date.", exception.getMessage());
+        verify(bookingRepository, never()).save(booking);
+    }
+
+    /**
+     * Method under test: {@link BookingService#saveBooking(Long, BookingSavingDto)}
+     */
+    @Test
+    void saveBooking_whenEndStartDateIsEqual_thenThrowInvalidDataException() {
+        BookingSavingDto invalidDateBooking = new BookingSavingDto(
+                null,
+                LocalDateTime.of(2022, 5, 7, 12, 0),
+                LocalDateTime.of(2022, 5, 7, 12, 0),
+                item.getId(),
+                user.getId(),
+                null);
+        when(itemService.getItemByIdAllField(anyLong())).thenReturn(item);
+        when(userService.getUserById(anyLong())).thenReturn(userDto);
+
+        InvalidDataException exception = assertThrows(InvalidDataException.class,
+                () -> bookingService.saveBooking(userId, invalidDateBooking));
+        assertEquals("The booking end date and the booking start date cannot be the same.", exception.getMessage());
+        verify(bookingRepository, never()).save(booking);
+    }
+
+    /**
+     * Method under test: {@link BookingService#saveBooking(Long, BookingSavingDto)}
+     */
+    @Test
+    void saveBooking_whenItemNotFound_thenThrowInvalidDataException() {
+        when(itemService.getItemByIdAllField(anyLong())).thenThrow(NotFoundException.class);
+
+        assertThrows(NotFoundException.class,
+                () -> bookingService.saveBooking(userId, bookingSaving));
+        verify(bookingRepository, never()).save(booking);
+    }
+
+    /**
      * Method under test: {@link BookingService#approve(Long, Long, boolean)}
      */
     @Test
@@ -150,6 +229,35 @@ class BookingServiceImplUnitTest {
         assertEquals(bookingAllFields, actualBooking);
     }
 
+    /**
+     * Method under test: {@link BookingService#approve(Long, Long, boolean)}
+     */
+    @Test
+    void approve_whenBookingNotFound_thenThrowNotFoundException() {
+        String message = "Booking with ID=1 cannot be found";
+        when(bookingRepository.findById(anyLong())).thenReturn(Optional.empty());
+
+        NotFoundException exception = assertThrows(NotFoundException.class,
+                () -> bookingService.approve(ownerId, 1L, true));
+        assertEquals(message, exception.getMessage());
+        verify(bookingRepository, never()).save(booking);
+    }
+
+    /**
+     * Method under test: {@link BookingService#approve(Long, Long, boolean)}
+     */
+    @Test
+    void approve_whenInvalidItemOwner_thenThrowNotFoundException() {
+        Long wrongUserId = 2L;
+        String message = "Only the item owner can approve or reject the rental request.";
+        when(bookingRepository.findById(anyLong())).thenReturn(Optional.of(booking));
+
+        NotFoundException exception = assertThrows(NotFoundException.class,
+                () -> bookingService.approve(wrongUserId, 1L, true));
+        assertEquals(message, exception.getMessage());
+        verify(bookingRepository, never()).save(booking);
+    }
+
 
     /**
      * Method under test: {@link BookingService#getBookingById(Long, Long)}.
@@ -161,6 +269,20 @@ class BookingServiceImplUnitTest {
         BookingAllFieldsDto actualBooking = bookingService.getBookingById(ownerId, 1L);
 
         assertEquals(bookingAllFields, actualBooking);
+    }
+
+    /**
+     * Method under test: {@link BookingService#getBookingById(Long, Long)}.
+     */
+    @Test
+    void getBookingById_whenWrongItemOwnerAndBooker_thenThrowNotFoundException() {
+        Long wrongUserId = 2L;
+        String message = "The item should belong to the item owner or the booking author.";
+        when(bookingRepository.findById(anyLong())).thenReturn(Optional.of(booking));
+
+        NotFoundException exception = assertThrows(NotFoundException.class,
+                () -> bookingService.getBookingById(wrongUserId, 1L));
+        assertEquals(message, exception.getMessage());
     }
 
 

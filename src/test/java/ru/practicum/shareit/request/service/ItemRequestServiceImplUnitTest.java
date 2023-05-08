@@ -69,13 +69,13 @@ class ItemRequestServiceImplUnitTest {
                 2L);
 
         requestDto = new ItemRequestDto(
-                1L,
+                2L,
                 "Хотел бы воспользоваться Дрелью",
                 LocalDateTime.of(2022, 5, 7, 23, 10, 30),
                 List.of());
 
         request = new ItemRequest(
-                1L,
+                2L,
                 "Хотел бы воспользоваться Дрелью",
                 user,
                 LocalDateTime.of(2022, 5, 7, 23, 10, 30));
@@ -152,9 +152,10 @@ class ItemRequestServiceImplUnitTest {
      */
     @Test
     void getItemRequestById() {
+        requestDto.setItems(List.of(itemDto));
         when(userRepository.findById(anyLong())).thenReturn(Optional.of(user));
         when(itemRequestRepository.findById(anyLong())).thenReturn(Optional.of(request));
-        when(itemRepository.findAllByRequestId(anyLong())).thenReturn(List.of());
+        when(itemRepository.findAllByRequestId(anyLong())).thenReturn(List.of(item));
 
         ItemRequestDto actualResult = requestService.getItemRequestById(request.getId(), userId);
 
@@ -171,7 +172,7 @@ class ItemRequestServiceImplUnitTest {
 
         NotFoundException exception = Assertions.assertThrows(NotFoundException.class,
                 () -> requestService.getItemRequestById(request.getId(), userId));
-        Assertions.assertEquals("Request with ID=1 was not found.", exception.getMessage());
+        Assertions.assertEquals("Request with ID=2 was not found.", exception.getMessage());
         verify(itemRepository, never()).findAllByRequestId(anyLong());
     }
 }
