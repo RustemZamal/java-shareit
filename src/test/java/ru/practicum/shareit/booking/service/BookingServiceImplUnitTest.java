@@ -7,7 +7,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Pageable;
-import ru.practicum.shareit.booking.controller.BookingController;
 import ru.practicum.shareit.booking.dto.BookingAllFieldsDto;
 import ru.practicum.shareit.booking.dto.BookingSavingDto;
 import ru.practicum.shareit.booking.model.Booking;
@@ -72,9 +71,9 @@ class BookingServiceImplUnitTest {
     @BeforeAll
     static void setUp() {
 
-        userDto = new UserDto(1L, "name","jane.doe@example.org");
+        userDto = new UserDto(1L, "name", "jane.doe@example.org");
 
-        user = new User(1L, "name","jane.doe@example.org");
+        user = new User(1L, "name", "jane.doe@example.org");
 
         request = new ItemRequest();
         request.setCreated(LocalDate.of(1970, 1, 1).atStartOfDay());
@@ -99,24 +98,24 @@ class BookingServiceImplUnitTest {
 
         bookingSaving = new BookingSavingDto(
                 null,
-                LocalDateTime.of(2022, 5,7,12,0),
-                LocalDateTime.of(2022,5,9,10,0),
+                LocalDateTime.of(2022, 5, 7, 12, 0),
+                LocalDateTime.of(2022, 5, 9, 10, 0),
                 item.getId(),
                 user.getId(),
                 null);
 
         bookingAllFields = new BookingAllFieldsDto(
                 1L,
-                LocalDateTime.of(2022, 5,7,12,0),
-                LocalDateTime.of(2022,5,9,10,0),
+                LocalDateTime.of(2022, 5, 7, 12, 0),
+                LocalDateTime.of(2022,5, 9, 10, 0),
                 "APPROVED",
                 userDto,
                 itemDto);
 
         booking = new Booking(
                 1L,
-                LocalDateTime.of(2022, 5,7,12,0),
-                LocalDateTime.of(2022,5,9,10,0),
+                LocalDateTime.of(2022, 5, 7, 12, 0),
+                LocalDateTime.of(2022, 5, 9, 10, 0),
                 item,
                 user,
                 BookingStatus.APPROVED);
@@ -153,7 +152,7 @@ class BookingServiceImplUnitTest {
 
 
     /**
-     * Method under test: {@link BookingService#getBookingById(Long, Long)}
+     * Method under test: {@link BookingService#getBookingById(Long, Long)}.
      */
     @Test
     void getBookingById() {
@@ -170,8 +169,7 @@ class BookingServiceImplUnitTest {
      */
     @Test
     void getBookingsByBookerId_whenBookingStateAll_thenReturnBookingByState() {
-        when(bookingRepository.
-                findByBookerIdOrderByStartDesc(anyLong(), any(OffsetPageRequest.class)))
+        when(bookingRepository.findByBookerIdOrderByStartDesc(anyLong(), any(OffsetPageRequest.class)))
                 .thenReturn(List.of(booking));
 
         List<BookingAllFieldsDto> actualBookings = bookingService
@@ -185,8 +183,7 @@ class BookingServiceImplUnitTest {
      */
     @Test
     void getBookingsByBookerId_whenBookingStateFUTURE_thenReturnBookingByState() {
-        when(bookingRepository.
-                findAllByBookerIdAndStartIsAfterAndEndIsAfterOrderByStartDesc(
+        when(bookingRepository.findAllByBookerIdAndStartIsAfterAndEndIsAfterOrderByStartDesc(
                         anyLong(),
                         any(LocalDateTime.class),
                         any(LocalDateTime.class),
@@ -204,8 +201,7 @@ class BookingServiceImplUnitTest {
      */
     @Test
     void getBookingsByBookerId_whenBookingStateCURRENT_thenReturnBookingByState() {
-        when(bookingRepository.
-                findByBookerIdAndStartIsBeforeAndEndIsAfterOrderByStartDesc(
+        when(bookingRepository.findByBookerIdAndStartIsBeforeAndEndIsAfterOrderByStartDesc(
                         anyLong(),
                         any(LocalDateTime.class),
                         any(LocalDateTime.class),
@@ -223,8 +219,7 @@ class BookingServiceImplUnitTest {
      */
     @Test
     void getBookingsByBookerId_whenBookingStatePAST_thenReturnBookingByState() {
-        when(bookingRepository.
-                findByBookerIdAndEndIsBeforeOrderByStartDesc(
+        when(bookingRepository.findByBookerIdAndEndIsBeforeOrderByStartDesc(
                         anyLong(),
                         any(LocalDateTime.class),
                         any(OffsetPageRequest.class)))
@@ -241,8 +236,8 @@ class BookingServiceImplUnitTest {
      */
     @Test
     void getBookingsByBookerId_whenBookingHasStatus_thenReturnBookingByStatus() {
-        when(bookingRepository.
-                findByBookerIdAndStatusOrderByStartDesc(anyLong(), any(BookingStatus.class), any(OffsetPageRequest.class)))
+        when(bookingRepository
+                .findByBookerIdAndStatusOrderByStartDesc(anyLong(), any(BookingStatus.class), any(OffsetPageRequest.class)))
                 .thenReturn(List.of(booking));
 
         List<BookingAllFieldsDto> actualBookings = bookingService
@@ -267,7 +262,7 @@ class BookingServiceImplUnitTest {
      */
     @Test
     void getBookingsByOwner_whenBookingStateALL_thenReturnBookingByState() {
-        when(bookingRepository.findAllByItemOwnerIdOrderByStartDesc(anyLong(),any(OffsetPageRequest.class)))
+        when(bookingRepository.findAllByItemOwnerIdOrderByStartDesc(anyLong(), any(OffsetPageRequest.class)))
                 .thenReturn(List.of(booking));
 
         List<BookingAllFieldsDto> actualBooking = bookingService

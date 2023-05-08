@@ -96,7 +96,7 @@ class UserControllerTest {
                             .stream()
                             .map(DefaultMessageSourceResolvable::getDefaultMessage)
                             .collect(Collectors.toList());
-                    if(!errors.equals(actualErrors)) {
+                    if (!errors.equals(actualErrors)) {
                         throw new AssertionError("Expected " + errors + ", but got " + actualErrors);
                     }
                 });

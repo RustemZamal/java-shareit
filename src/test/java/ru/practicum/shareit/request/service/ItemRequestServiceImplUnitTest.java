@@ -1,6 +1,6 @@
 package ru.practicum.shareit.request.service;
 
-import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -11,7 +11,6 @@ import ru.practicum.shareit.exceptions.NotFoundException;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.repository.ItemRepository;
-import ru.practicum.shareit.request.controller.ItemRequestController;
 import ru.practicum.shareit.request.dto.ItemRequestDto;
 import ru.practicum.shareit.request.model.ItemRequest;
 import ru.practicum.shareit.request.repository.ItemRequestRepository;
@@ -20,15 +19,15 @@ import ru.practicum.shareit.user.repository.UserRepository;
 import ru.practicum.shareit.util.OffsetPageRequest;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.anyList;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class ItemRequestServiceImplUnitTest {
@@ -101,8 +100,8 @@ class ItemRequestServiceImplUnitTest {
 
         ItemRequestDto actualRequest = requestService.createItemRequest(userId, requestDto);
 
-        assertNotNull(actualRequest.getCreated());
-        assertEquals(requestDto.getId(), actualRequest.getId());
+        Assertions.assertNotNull(actualRequest.getCreated());
+        Assertions.assertEquals(requestDto.getId(), actualRequest.getId());
 
     }
 
@@ -113,9 +112,9 @@ class ItemRequestServiceImplUnitTest {
     void createItemRequest_whenUserNotFound_thenNotSaveItemRequest() {
         when(userRepository.findById(anyLong())).thenReturn(Optional.empty());
 
-        NotFoundException exception = assertThrows(NotFoundException.class,
+        NotFoundException exception = Assertions.assertThrows(NotFoundException.class,
                 () -> requestService.createItemRequest(userId, requestDto));
-        assertEquals("You don't have permission to perform this operation.", exception.getMessage());
+        Assertions.assertEquals("You don't have permission to perform this operation.", exception.getMessage());
         verify(itemRequestRepository, never()).save(any(ItemRequest.class));
     }
 
@@ -130,7 +129,7 @@ class ItemRequestServiceImplUnitTest {
 
         List<ItemRequestDto> actualRequests = requestService.getItemRequestByOwnerId(userId);
 
-        assertEquals(List.of(requestDto), actualRequests);
+        Assertions.assertEquals(List.of(requestDto), actualRequests);
     }
 
     /**
@@ -145,7 +144,7 @@ class ItemRequestServiceImplUnitTest {
 
         List<ItemRequestDto> actualRequests = requestService.getAllItemRequests(0, 2, userId);
 
-        assertEquals(List.of(requestDto), actualRequests);
+        Assertions.assertEquals(List.of(requestDto), actualRequests);
     }
 
     /**
@@ -159,7 +158,7 @@ class ItemRequestServiceImplUnitTest {
 
         ItemRequestDto actualResult = requestService.getItemRequestById(request.getId(), userId);
 
-        assertEquals(requestDto, actualResult);
+        Assertions.assertEquals(requestDto, actualResult);
     }
 
     /**
@@ -170,9 +169,9 @@ class ItemRequestServiceImplUnitTest {
         when(userRepository.findById(anyLong())).thenReturn(Optional.of(user));
         when(itemRequestRepository.findById(anyLong())).thenReturn(Optional.empty());
 
-        NotFoundException exception = assertThrows(NotFoundException.class,
+        NotFoundException exception = Assertions.assertThrows(NotFoundException.class,
                 () -> requestService.getItemRequestById(request.getId(), userId));
-        assertEquals("Request with ID=1 was not found.", exception.getMessage());
+        Assertions.assertEquals("Request with ID=1 was not found.", exception.getMessage());
         verify(itemRepository, never()).findAllByRequestId(anyLong());
     }
 }

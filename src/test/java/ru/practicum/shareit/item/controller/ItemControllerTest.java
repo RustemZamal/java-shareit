@@ -6,14 +6,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.MethodArgumentNotValidException;
-import ru.practicum.shareit.booking.service.BookingService;
 import ru.practicum.shareit.exceptions.ErrorHandler;
 import ru.practicum.shareit.exceptions.ErrorResponse;
 import ru.practicum.shareit.item.dto.CommentDto;
@@ -86,7 +84,7 @@ class ItemControllerTest {
             1L,
             "Add comment from user1",
             "Mike",
-            LocalDateTime.of(2023, 5, 5,17,11, 30));
+            LocalDateTime.of(2023, 5, 5, 17, 11, 30));
 
     private final ItemAllFieldsDto itemAllFields = new ItemAllFieldsDto(
        1L,
@@ -141,7 +139,7 @@ class ItemControllerTest {
                 .andExpect(result -> {
                     MethodArgumentNotValidException exception = (MethodArgumentNotValidException) result.getResolvedException();
                     BindingResult bindingResult = exception.getBindingResult();
-                    List<String> errors = List.of( "The name cannot be empty!", "The description cannot be empty!");
+                    List<String> errors = List.of("The name cannot be empty!", "The description cannot be empty!");
                     List<String> actualErrors = bindingResult.getAllErrors().stream()
                             .map(DefaultMessageSourceResolvable::getDefaultMessage)
                             .collect(Collectors.toList());
@@ -310,6 +308,6 @@ class ItemControllerTest {
                 .andExpect(jsonPath("$.error", is(error.getError())));
 
         verify(itemService, never()).getItemByUserId(userId, new OffsetPageRequest(1, 2));
-        verify(errorHandler,times(1)).handleConstraintViolationException(any());
+        verify(errorHandler, times(1)).handleConstraintViolationException(any());
     }
 }
