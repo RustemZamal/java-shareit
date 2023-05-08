@@ -1,6 +1,7 @@
 package ru.practicum.shareit.item.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -14,11 +15,15 @@ import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.ItemAllFieldsDto;
 import ru.practicum.shareit.item.service.ItemService;
 import ru.practicum.shareit.item.dto.ItemDto;
+import ru.practicum.shareit.util.OffsetPageRequest;
 
 import javax.validation.Valid;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
 import java.util.List;
 
 
+@Validated
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/items")
@@ -86,8 +91,11 @@ public class ItemController {
      * @return Возвращает предмет.
      */
     @GetMapping("/search")
-    public List<ItemDto> getItemsBySearch(@RequestParam String text) {
-        return itemService.getItemBySearch(text);
+    public List<ItemDto> getItemsBySearch(
+            @RequestParam String text,
+            @RequestParam(defaultValue = "0") int from,
+            @RequestParam(defaultValue = "20") int size) {
+        return itemService.getItemBySearch(text, new OffsetPageRequest(from, size));
     }
 
     /**
@@ -96,7 +104,10 @@ public class ItemController {
      * @return Возвращает предмет.
      */
     @GetMapping
-    public List<ItemAllFieldsDto> getItemByUserId(@RequestHeader("X-Sharer-User-Id") Long userId) {
-        return itemService.getItemByUserId(userId);
+    public List<ItemAllFieldsDto> getItemByUserId(
+            @RequestHeader("X-Sharer-User-Id") Long userId,
+            @RequestParam(defaultValue = "0") @Min(0) int from,
+            @RequestParam(defaultValue = "20") @Min(1) @Max(100) int size) {
+        return itemService.getItemByUserId(userId, new OffsetPageRequest(from, size));
     }
 }

@@ -30,7 +30,7 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public UserDto updateUser(UserDto userDto, Long userId) {
        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new NotFoundException(String.format("Пользователь с ID=%d не наыйден!", userId)));
+                .orElseThrow(() -> new NotFoundException(String.format("User with ID=%d was not found!", userId)));
 
        if (userDto.getEmail() != null) {
             user.setEmail(userDto.getEmail());

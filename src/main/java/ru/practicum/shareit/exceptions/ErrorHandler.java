@@ -10,7 +10,9 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import javax.validation.ConstraintViolationException;
 import java.util.Objects;
+
 
 @Slf4j
 @RestControllerAdvice
@@ -21,6 +23,23 @@ public class ErrorHandler {
     public ErrorResponse handleMethodArgumentNotValidException(final MethodArgumentNotValidException ex) {
         log.info("[VALIDATION ERROR]: " + Objects.requireNonNull(ex.getFieldError()).getDefaultMessage());
         return new ErrorResponse(Objects.requireNonNull(ex.getFieldError()).getDefaultMessage());
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+        public ErrorResponse handleConstraintViolationException(final ConstraintViolationException ex) {
+            log.info("[VALIDATION ERROR]: " + ex.getConstraintViolations());
+            StringBuilder builder = new StringBuilder();
+
+        if (ex.getMessage().contains("from")) {
+            builder.append("from: must be greater than or equal to 0. ");
+        }
+
+        if (ex.getLocalizedMessage().contains("size")) {
+            builder.append("size: must be greater than or equal to 1.");
+        }
+
+        return new ErrorResponse(builder.toString());
     }
 
     @ExceptionHandler
@@ -40,7 +59,7 @@ public class ErrorHandler {
     @ExceptionHandler
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ErrorResponse handleNotFoundException(final NotFoundException ex) {
-        log.info("[NOT FOUND ERROR]: {}" + ex.getMessage());
+        log.info("[NOT FOUND ERROR]: {}", ex.getMessage());
         return new ErrorResponse(ex.getMessage());
     }
 
