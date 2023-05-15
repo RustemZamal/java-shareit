@@ -5,6 +5,7 @@ import lombok.NoArgsConstructor;
 import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.model.Comment;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,6 +14,7 @@ public class CommentMapper {
 
     public static Comment mapToComment(CommentDto commentDto) {
         Comment comment = new Comment();
+        comment.setCreated(LocalDateTime.now());
         comment.setText(commentDto.getText());
 
         return comment;
@@ -26,7 +28,7 @@ public class CommentMapper {
                 comment.getCreated());
     }
 
-    public static List<CommentDto> mapToCommentDto(Iterable<Comment> comments) {
+    public static List<CommentDto> mapToCommentDto(final Iterable<Comment> comments) {
         List<CommentDto> dtos = new ArrayList<>();
         if (comments == null) {
             return List.of();

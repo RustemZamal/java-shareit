@@ -1,6 +1,7 @@
 package ru.practicum.shareit.booking.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.dto.BookingAllFieldsDto;
@@ -98,68 +99,69 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public List<BookingAllFieldsDto> getBookingsByBookerId(Long bookerId, String state) {
+    public List<BookingAllFieldsDto> getBookingsByBookerId(Long bookerId, String state, Pageable pageable) {
         userService.getUserById(bookerId);
 
         if (state == null || BookingState.ALL.name().equals(state)) {
-            return BookingMapper.mapToBookingAllFieldsDto(bookingRepository.findByBookerIdOrderByStartDesc(bookerId));
+            return BookingMapper.mapToBookingAllFieldsDto(
+                    bookingRepository.findByBookerIdOrderByStartDesc(bookerId, pageable));
         }
 
         if (BookingState.FUTURE.name().equals(state)) {
             return BookingMapper.mapToBookingAllFieldsDto(
                     bookingRepository.findAllByBookerIdAndStartIsAfterAndEndIsAfterOrderByStartDesc(
-                                    bookerId, LocalDateTime.now(), LocalDateTime.now()));
+                                    bookerId, LocalDateTime.now(), LocalDateTime.now(), pageable));
         }
 
         if (BookingState.PAST.name().equals(state)) {
             return BookingMapper.mapToBookingAllFieldsDto(
                     bookingRepository.findByBookerIdAndEndIsBeforeOrderByStartDesc(
-                            bookerId, LocalDateTime.now()));
+                            bookerId, LocalDateTime.now(), pageable));
         }
 
         if (BookingState.CURRENT.name().equals(state)) {
             return BookingMapper.mapToBookingAllFieldsDto(
                     bookingRepository.findByBookerIdAndStartIsBeforeAndEndIsAfterOrderByStartDesc(
-                            bookerId, LocalDateTime.now(), LocalDateTime.now()));
+                            bookerId, LocalDateTime.now(), LocalDateTime.now(), pageable));
         }
 
         if (Arrays.stream(BookingStatus.values()).anyMatch(status -> status.name().equals(state))) {
             return BookingMapper.mapToBookingAllFieldsDto(bookingRepository
-                    .findByBookerIdAndStatusOrderByStartDesc(bookerId, BookingStatus.valueOf(state)));
+                    .findByBookerIdAndStatusOrderByStartDesc(bookerId, BookingStatus.valueOf(state), pageable));
         } else {
             throw new InvalidDataException(String.format("Unknown state: %s", state));
         }
     }
 
     @Override
-    public List<BookingAllFieldsDto> getBookingsByOwner(Long ownerId, String state) {
+    public List<BookingAllFieldsDto> getBookingsByOwner(Long ownerId, String state, Pageable pageable) {
         userService.getUserById(ownerId);
         if (state == null || BookingState.ALL.name().equals(state)) {
-            List<Booking> booking = bookingRepository.findAllByItemOwnerIdOrderByStartDesc(ownerId);
+            List<Booking> booking = bookingRepository.findAllByItemOwnerIdOrderByStartDesc(ownerId, pageable);
             return BookingMapper.mapToBookingAllFieldsDto(booking);
         }
 
         if (BookingState.FUTURE.name().equals(state)) {
             return BookingMapper.mapToBookingAllFieldsDto(
                     bookingRepository.findByItemOwnerIdAndStartIsAfterAndEndIsAfterOrderByStartDesc(
-                            ownerId, LocalDateTime.now(), LocalDateTime.now()));
+                            ownerId, LocalDateTime.now(), LocalDateTime.now(), pageable));
         }
 
         if (BookingState.PAST.name().equals(state)) {
             return BookingMapper.mapToBookingAllFieldsDto(
                     bookingRepository.findByItemOwnerIdAndEndIsBeforeOrderByStartDesc(
-                            ownerId, LocalDateTime.now()));
+                            ownerId, LocalDateTime.now(), pageable));
         }
 
         if (BookingState.CURRENT.name().equals(state)) {
             return BookingMapper.mapToBookingAllFieldsDto(
                     bookingRepository.findByItemOwnerIdAndStartIsBeforeAndEndIsAfterOrderByStartDesc(
-                            ownerId, LocalDateTime.now(), LocalDateTime.now()));
+                            ownerId, LocalDateTime.now(), LocalDateTime.now(), pageable));
         }
 
         if (Arrays.stream(BookingStatus.values()).anyMatch(status -> status.name().equals(state))) {
             return BookingMapper.mapToBookingAllFieldsDto(bookingRepository
-                    .findByItemOwnerIdAndStatusOrderByStartDesc(ownerId, BookingStatus.valueOf(state)));
+                    .findByItemOwnerIdAndStatusOrderByStartDesc(ownerId, BookingStatus.valueOf(state), pageable));
         } else {
             throw new InvalidDataException(String.format("Unknown state: %s", state));
         }

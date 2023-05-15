@@ -8,6 +8,7 @@ import ru.practicum.shareit.item.dto.ItemAllFieldsDto;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.model.Item;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
@@ -20,6 +21,18 @@ public class ItemMapper {
                 item.getDescription(),
                 item.getAvailable(),
                 item.getRequest() != null ? item.getRequest().getId() : null);
+    }
+
+    public static List<ItemDto> mapToItemDto(Iterable<Item> items) {
+        List<ItemDto> itemDtos =  new ArrayList<>();
+        if (items == null) {
+            return List.of();
+        }
+
+        for (Item item : items) {
+            itemDtos.add(mapToItemDto(item));
+        }
+        return itemDtos;
     }
 
     public static ItemAllFieldsDto mapToItemAllFieldsDto(Item item,

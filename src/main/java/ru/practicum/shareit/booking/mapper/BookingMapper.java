@@ -13,10 +13,11 @@ import java.util.List;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class BookingMapper {
+
     public static Booking mapToBooking(BookingSavingDto bookingSavingDto) {
         Booking booking = new Booking();
         booking.setStart(bookingSavingDto.getStart());
-        booking.setEnd((bookingSavingDto.getEnd()));
+        booking.setEnd(bookingSavingDto.getEnd());
         return booking;
     }
 

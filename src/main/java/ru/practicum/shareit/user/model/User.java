@@ -1,8 +1,10 @@
 package ru.practicum.shareit.user.model;
 
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Builder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -12,10 +14,12 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 
-@Data
-@AllArgsConstructor
-@NoArgsConstructor
+@Builder
+@Setter
+@Getter
 @Entity
+@NoArgsConstructor
+@AllArgsConstructor
 @Table(name = "users")
 public class User {
 

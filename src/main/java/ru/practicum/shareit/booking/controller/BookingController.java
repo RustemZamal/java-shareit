@@ -1,6 +1,7 @@
 package ru.practicum.shareit.booking.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -13,11 +14,15 @@ import org.springframework.web.bind.annotation.RestController;
 import ru.practicum.shareit.booking.dto.BookingAllFieldsDto;
 import ru.practicum.shareit.booking.dto.BookingSavingDto;
 import ru.practicum.shareit.booking.service.BookingService;
+import ru.practicum.shareit.util.OffsetPageRequest;
 
 import javax.validation.Valid;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
 import java.util.List;
 
 
+@Validated
 @RestController
 @RequiredArgsConstructor
 @RequestMapping(path = "/bookings")
@@ -73,10 +78,12 @@ public class BookingController {
      * @return Возвралщает список бронирования.
      */
     @GetMapping
-    public List<BookingAllFieldsDto> getBookingsByUBooker(
+    public List<BookingAllFieldsDto> getBookingsByBooker(
             @RequestHeader("X-Sharer-User-Id") Long bookerId,
-            @RequestParam(defaultValue = "ALL") String state) {
-        return bookingService.getBookingsByBookerId(bookerId, state);
+            @RequestParam(defaultValue = "ALL") String state,
+            @RequestParam (defaultValue = "0") @Min(0) int from,
+            @RequestParam(defaultValue = "20") @Min(1) @Max(100) int size) {
+        return bookingService.getBookingsByBookerId(bookerId, state, new OffsetPageRequest(from, size));
     }
 
     /**
@@ -88,7 +95,9 @@ public class BookingController {
     @GetMapping("/owner")
     public List<BookingAllFieldsDto> getBookingsByOwner(
             @RequestHeader("X-Sharer-User-Id") Long ownerId,
-            @RequestParam(required = false, defaultValue = "ALL") String state) {
-        return bookingService.getBookingsByOwner(ownerId, state);
+            @RequestParam(defaultValue = "ALL") String state,
+            @RequestParam(defaultValue = "0") @Min(0) int from,
+            @RequestParam(defaultValue = "20") @Min(1) @Max(100) int size) {
+        return bookingService.getBookingsByOwner(ownerId, state, new OffsetPageRequest(from, size));
     }
 }
