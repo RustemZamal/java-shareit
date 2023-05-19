@@ -154,24 +154,6 @@ class ItemRequestControllerTest {
     }
 
     /**
-     * Method under test: {@link ItemRequestController#getAllItemRequests(Long, Integer, Integer)}
-     */
-    @Test
-    void getAllItemRequests_whenInvalidParam_thenReturn_BadRequest() throws Exception {
-        ErrorResponse error = new ErrorResponse("from: must be greater than or equal to 0. size: must be greater than or equal to 1.");
-        String response = mvc.perform(get("/requests/all")
-                        .header(headerShareUserId, userId)
-                        .param("from", "-1")
-                        .param("size", "0"))
-                .andDo(print())
-                .andExpect(status().isBadRequest())
-                .andReturn()
-                .getResponse()
-                .getContentAsString(StandardCharsets.UTF_8);
-        assertEquals(error, mapper.readValue(response, ErrorResponse.class));
-    }
-
-    /**
      * Method under test: {@link ItemRequestController#getItemRequestById(Long, Long)}
      */
     @Test

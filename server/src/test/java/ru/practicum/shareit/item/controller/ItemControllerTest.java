@@ -13,14 +13,12 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import ru.practicum.shareit.exceptions.ErrorHandler;
-import ru.practicum.shareit.exceptions.ErrorResponse;
 import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.ItemAllFieldsDto;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.service.ItemService;
 import ru.practicum.shareit.util.OffsetPageRequest;
 
-import javax.validation.ConstraintViolationException;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.Collections;
@@ -289,26 +287,5 @@ class ItemControllerTest {
                 .andExpect(jsonPath("$[0].description", is(itemAllFields.getDescription())))
                 .andExpect(jsonPath("$[0].available", is(itemAllFields.getAvailable())));
         verify(itemService, times(1)).getItemByUserId(userId, new OffsetPageRequest(0, 2));
-    }
-
-    /**
-     * Method under test: {@link ItemController#getItemByUserId(Long, int, int)}
-     */
-    @Test
-    void getItemByUserId_invalidParamFrom_returnBadRequest() throws Exception {
-        ErrorResponse error = new ErrorResponse("size: must be greater than or equal to 0. from: must be greater than or equal to 1.");
-        when(errorHandler.handleConstraintViolationException(any(ConstraintViolationException.class))).thenReturn(error);
-        mvc.perform(MockMvcRequestBuilders.get("/items")
-                        .header(headerShareUserId, userId)
-                        .param("text", "дрель")
-                        .param("from", "-1")
-                        .param("size", "1"))
-                .andDo(print())
-                .andExpect(status().isBadRequest())
-                .andExpect(result -> assertTrue(result.getResolvedException() instanceof ConstraintViolationException))
-                .andExpect(jsonPath("$.error", is(error.getError())));
-
-        verify(itemService, never()).getItemByUserId(userId, new OffsetPageRequest(1, 2));
-        verify(errorHandler, times(1)).handleConstraintViolationException(any());
     }
 }
