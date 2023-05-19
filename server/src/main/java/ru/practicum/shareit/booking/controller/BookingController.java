@@ -16,7 +16,6 @@ import ru.practicum.shareit.booking.dto.BookingSavingDto;
 import ru.practicum.shareit.booking.service.BookingService;
 import ru.practicum.shareit.util.OffsetPageRequest;
 
-import javax.validation.Valid;
 import java.util.List;
 
 
@@ -37,7 +36,7 @@ public class BookingController {
     @PostMapping
     public BookingAllFieldsDto saveBooking(
             @RequestHeader("X-Sharer-User-Id") Long userId,
-            @RequestBody @Valid BookingSavingDto bookingSavingDto) {
+            @RequestBody BookingSavingDto bookingSavingDto) {
         return bookingService.saveBooking(userId, bookingSavingDto);
     }
 

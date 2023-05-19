@@ -1,13 +1,10 @@
 package ru.practicum.shareit.booking.controller;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.anyBoolean;
 import static org.mockito.Mockito.anyString;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
@@ -19,7 +16,6 @@ import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -29,11 +25,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.MethodArgumentNotValidException;
 import ru.practicum.shareit.booking.dto.BookingAllFieldsDto;
 import ru.practicum.shareit.booking.dto.BookingSavingDto;
 import ru.practicum.shareit.booking.service.BookingService;
@@ -139,45 +132,6 @@ class BookingControllerTest {
 
         assertEquals(bookingAllFields, mapper.readValue(result, BookingAllFieldsDto.class));
     }
-
-    /**
-     * Method under test: {@link BookingController#saveBooking(Long, BookingSavingDto)}
-     */
-    @Test
-    void saveBooking_whenBookingInvalid_theReturnBadRequest() throws Exception {
-        BookingSavingDto invalidBooking = new BookingSavingDto(
-                null,
-                null,
-                null,
-                item.getId(),
-                user.getId(),
-                "WAITING");
-
-        mvc.perform(post("/bookings")
-                        .header(headerShareUserId, userId)
-                        .content(mapper.writeValueAsString(invalidBooking))
-                        .characterEncoding(StandardCharsets.UTF_8)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON))
-                .andDo(print())
-                .andExpect(status().isBadRequest())
-                .andExpect(result -> assertTrue(result.getResolvedException() instanceof MethodArgumentNotValidException))
-                .andExpect(result -> {
-                    MethodArgumentNotValidException exception = (MethodArgumentNotValidException) result.getResolvedException();
-                    BindingResult bindingResult = exception.getBindingResult();
-                    List<String> errors = List.of("The booking start date cannot be empty.", "The booking end date cannot be empty.");
-                    List<String> actualErrors = bindingResult.getAllErrors()
-                            .stream()
-                            .map(DefaultMessageSourceResolvable::getDefaultMessage)
-                            .collect(Collectors.toList());
-                    if (!errors.contains(actualErrors.get(0)) && errors.contains(actualErrors.get(1))) {
-                        throw new AssertionError("Expected" + errors + "but got" + actualErrors);
-                    }
-                });
-
-        verify(bookingService, never()).saveBooking(anyLong(), any());
-    }
-
 
     /**
      * Method under test: {@link BookingController#approve(Long, Long, boolean)}.

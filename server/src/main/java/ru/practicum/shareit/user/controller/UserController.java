@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.RestController;
 import ru.practicum.shareit.user.service.UserService;
 import ru.practicum.shareit.user.dto.UserDto;
 
-import javax.validation.Valid;
 import java.util.List;
 
 
@@ -29,7 +28,7 @@ public class UserController {
      * @return Возвращает созданного польлзователя.
      */
     @PostMapping
-    public UserDto creatUser(@Valid @RequestBody UserDto userDto) {
+    public UserDto creatUser(@RequestBody UserDto userDto) {
         return userService.createUser(userDto);
     }
 

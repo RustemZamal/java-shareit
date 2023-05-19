@@ -21,7 +21,6 @@ import ru.practicum.shareit.util.OffsetPageRequest;
 
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -169,31 +168,6 @@ class ItemControllerTest {
                 .andExpect(jsonPath("$.authorName", is(commentDto.getAuthorName())))
                 .andExpect(jsonPath("$.created", is(commentDto.getCreated().toString())));
         verify(itemService, times(1)).addNewComment(userId, itemId, commentDto);
-    }
-
-    @Test
-    void addNewComment_invalidInput_returnsBadRequest() throws Exception {
-        mvc.perform(MockMvcRequestBuilders.post("/items/{itemId}/comment", 1)
-                        .header(headerShareUserId, userId)
-                        .content(mapper.writeValueAsString(commentDtoError))
-                        .characterEncoding(StandardCharsets.UTF_8)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON))
-                .andDo(print())
-                .andExpect(result -> assertTrue(result.getResolvedException() instanceof MethodArgumentNotValidException))
-                .andExpect(result -> {
-                    MethodArgumentNotValidException exception = (MethodArgumentNotValidException) result.getResolvedException();
-                    BindingResult bindingResult = exception.getBindingResult();
-                    List<String> errors = Collections.singletonList("The text comment should not be empty.");
-                    List<String> actualErrors = bindingResult.getAllErrors().stream()
-                            .map(DefaultMessageSourceResolvable::getDefaultMessage)
-                            .collect(Collectors.toList());
-                    if (!errors.equals(actualErrors)) {
-                        throw new AssertionError("Expected " + errors + ", but got " + actualErrors);
-                    }
-                })
-                .andExpect(status().isBadRequest());
-        verify(itemService, never()).addNewComment(userId, itemId, commentDtoError);
     }
 
     /**

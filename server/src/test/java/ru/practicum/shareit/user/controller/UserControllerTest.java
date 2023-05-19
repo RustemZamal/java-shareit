@@ -7,22 +7,17 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.MethodArgumentNotValidException;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.service.UserService;
 
 import java.nio.charset.StandardCharsets;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -73,34 +68,6 @@ class UserControllerTest {
                 .getContentAsString(StandardCharsets.UTF_8);
 
         assertEquals(userDto, mapper.readValue(response, UserDto.class));
-    }
-
-    /**
-     * Method under test: {@link UserController#creatUser(UserDto)}
-     */
-    @Test
-    void creatUser_whenInvalidData_thenReturnBadRequest() throws Exception {
-        UserDto incorrectEmail = new UserDto(1L, "Mike", "mikegmail.com");
-        mvc.perform(post("/users")
-                        .content(mapper.writeValueAsString(incorrectEmail))
-                        .characterEncoding(StandardCharsets.UTF_8)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON))
-                .andDo(print())
-                .andExpect(status().isBadRequest())
-                .andExpect(result -> {
-                    MethodArgumentNotValidException exception = (MethodArgumentNotValidException) result.getResolvedException();
-                    BindingResult bindingResult = exception.getBindingResult();
-                    List<String> errors = List.of("Incorrect email! Please enter a valid email.");
-                    List<String> actualErrors = bindingResult.getAllErrors()
-                            .stream()
-                            .map(DefaultMessageSourceResolvable::getDefaultMessage)
-                            .collect(Collectors.toList());
-                    if (!errors.equals(actualErrors)) {
-                        throw new AssertionError("Expected " + errors + ", but got " + actualErrors);
-                    }
-                });
-        verify(userService, never()).createUser(userDto);
     }
 
     /**

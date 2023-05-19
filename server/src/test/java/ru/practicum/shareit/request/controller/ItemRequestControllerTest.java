@@ -9,7 +9,6 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import ru.practicum.shareit.exceptions.ErrorResponse;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.request.dto.ItemRequestDto;
 import ru.practicum.shareit.request.service.ItemRequestService;
@@ -84,33 +83,6 @@ class ItemRequestControllerTest {
                 .getContentAsString(StandardCharsets.UTF_8);
 
         assertEquals(requestDto, mapper.readValue(response, ItemRequestDto.class));
-    }
-
-    /**
-     * Method under test: {@link ItemRequestController#createItemRequest(Long, ItemRequestDto)}
-     */
-    @Test
-    void createItemRequest_whenInvalidRequest_thenReturnBadRequest() throws Exception {
-        ItemRequestDto invalidRequest = new ItemRequestDto(
-                1L,
-                null,
-                LocalDateTime.now(),
-                List.of());
-        ErrorResponse error = new ErrorResponse("description cannot be empty or null.");
-
-        String response = mvc.perform(post("/requests")
-                        .header(headerShareUserId, userId)
-                        .content(mapper.writeValueAsString(invalidRequest))
-                        .characterEncoding(StandardCharsets.UTF_8)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON))
-                .andDo(print())
-                .andExpect(status().isBadRequest())
-                .andReturn()
-                .getResponse()
-                .getContentAsString(StandardCharsets.UTF_8);
-
-        assertEquals(error, mapper.readValue(response, ErrorResponse.class));
     }
 
     /**
