@@ -17,8 +17,6 @@ import ru.practicum.shareit.booking.service.BookingService;
 import ru.practicum.shareit.util.OffsetPageRequest;
 
 import javax.validation.Valid;
-import javax.validation.constraints.Max;
-import javax.validation.constraints.Min;
 import java.util.List;
 
 
@@ -81,8 +79,8 @@ public class BookingController {
     public List<BookingAllFieldsDto> getBookingsByBooker(
             @RequestHeader("X-Sharer-User-Id") Long bookerId,
             @RequestParam String state,
-            @RequestParam int from,
-            @RequestParam int size) {
+            @RequestParam (defaultValue = "0") int from,
+            @RequestParam (defaultValue = "10") int size) {
         return bookingService.getBookingsByBookerId(bookerId, state, new OffsetPageRequest(from, size));
     }
 
@@ -96,8 +94,8 @@ public class BookingController {
     public List<BookingAllFieldsDto> getBookingsByOwner(
             @RequestHeader("X-Sharer-User-Id") Long ownerId,
             @RequestParam String state,
-            @RequestParam int from,
-            @RequestParam int size) {
+            @RequestParam(defaultValue = "0") int from,
+            @RequestParam(defaultValue = "10") int size) {
         return bookingService.getBookingsByOwner(ownerId, state, new OffsetPageRequest(from, size));
     }
 }

@@ -14,8 +14,6 @@ import ru.practicum.shareit.request.dto.ItemRequestDto;
 import ru.practicum.shareit.request.service.ItemRequestService;
 
 import javax.validation.Valid;
-import javax.validation.constraints.Max;
-import javax.validation.constraints.Min;
 import java.util.List;
 
 @Validated
@@ -42,8 +40,8 @@ public class ItemRequestController {
     @GetMapping("/all")
     public List<ItemRequestDto> getAllItemRequests(
             @RequestHeader("X-Sharer-User-Id") Long userId,
-            @RequestParam (defaultValue = "0") @Min(0) Integer from,
-            @RequestParam(defaultValue = "20") @Min(1) @Max(100) Integer size) {
+            @RequestParam (defaultValue = "0") Integer from,
+            @RequestParam (defaultValue = "10") Integer size) {
         return itemRequestService.getAllItemRequests(from, size, userId);
     }
 
