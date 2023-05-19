@@ -24,7 +24,7 @@ public class ErrorHandler {
     }
 
     @ExceptionHandler
-    @ResponseStatus
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handleConstraintViolationException(final ConstraintViolationException ex) {
         log.info("[VALIDATION ERROR]: " + ex.getConstraintViolations());
         StringBuilder builder = new StringBuilder();

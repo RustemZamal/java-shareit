@@ -24,6 +24,7 @@ import ru.practicum.shareit.user.mapper.UserMapper;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.service.UserService;
 
+
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
@@ -51,8 +52,8 @@ public class ItemServiceImpl implements ItemService {
     public ItemDto addNewItem(Long userId, ItemDto itemDto) {
         Item item = ItemMapper.mapToItem(itemDto);
         User user = UserMapper.mapToUser(userService.getUserById(userId));
-        ItemRequest itemRequest = itemDto.getRequestId() != null ?
-                requestRepository.findById(itemDto.getRequestId()).orElse(null) : null;
+        ItemRequest itemRequest = itemDto.getRequestId() != null
+                ? requestRepository.findById(itemDto.getRequestId()).orElse(null) : null;
         item.setOwner(user);
         item.setRequest(itemRequest);
 
@@ -142,7 +143,7 @@ public class ItemServiceImpl implements ItemService {
     public CommentDto addNewComment(Long bookerId, Long itemId, CommentDto commentDto) {
         List<Booking> bookings = bookingRepository.findDistinctBookingByBookerIdAndItemId(bookerId, itemId);
 
-       if (bookings.isEmpty()) {
+        if (bookings.isEmpty()) {
             throw new InvalidDataException(
                     String.format(
                             "A user with ID=%d cannot leave a comment because he/she didn't rent this item.", bookerId));
@@ -155,7 +156,6 @@ public class ItemServiceImpl implements ItemService {
                .orElseThrow(() -> new InvalidDataException(
                        String.format(
                                "The user with ID=%d cannot leave a comment, as he/she has not yet given the item", bookerId)));
-
 
         if (booking.getEnd().isAfter(LocalDateTime.now())) {
             throw new InvalidDataException("A comment can be left only after the end of the rent period.");

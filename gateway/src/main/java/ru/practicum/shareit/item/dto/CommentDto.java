@@ -10,6 +10,7 @@ public class CommentDto {
 
     @NotBlank(message = "The text comment should not be empty.")
     private String text;
+
     private String authorName;
 
     private LocalDateTime created;

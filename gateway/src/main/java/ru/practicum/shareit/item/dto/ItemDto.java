@@ -9,13 +9,13 @@ import javax.validation.constraints.NotNull;
 public class ItemDto {
 
     @NotBlank(message = "The name cannot be empty!")
-    private final String name;
+    private String name;
 
     @NotBlank(message = "The description cannot be empty!")
-    private final String description;
+    private String description;
 
     @NotNull(message = "The status of whether the product is available or not should not be empty!")
-    private final Boolean available;
+    private Boolean available;
 
-    private final Long requestId;
+    private Long requestId;
 }
