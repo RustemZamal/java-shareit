@@ -60,6 +60,7 @@ public class ErrorHandler {
         log.info("[INVALID ERROR]: {}", ex.getMessage());
         return new ErrorResponse(ex.getMessage());
     }
+
     @ExceptionHandler
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ErrorResponse handleThrowableException(final Throwable ex) {
