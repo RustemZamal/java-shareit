@@ -12,9 +12,8 @@ services:
       - db
     environment:
       - SHAREIT_SERVER_URL=http://server:9090
-      - JAVA_TOOL_OPTIONS=-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005 #-Duser.timezone=UTC
-     # - TZ=${TZ:-$(timedatectl show --property=Timezone --value)}  # Set TZ environment variable with host's time zone
-     # - TZ=Europe/Moscow
+      - JAVA_TOOL_OPTIONS=-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005
+
   server:
     build: server
     image: server
@@ -26,9 +25,7 @@ services:
       - db
     environment:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/shareit
-      - JAVA_TOOL_OPTIONS=-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005 #-Duser.timezone=UTC
-      #- TZ=${TZ:-$(timedatectl show --property=Timezone --value)}  # Set TZ environment variable with host's time zone
-     # - TZ=Europe/Moscow
+      - JAVA_TOOL_OPTIONS=-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005
 
   db:
     image: postgres:15.3-alpine

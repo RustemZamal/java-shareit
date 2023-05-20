@@ -17,7 +17,6 @@ import ru.practicum.shareit.item.service.ItemService;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.util.OffsetPageRequest;
 
-import javax.validation.Valid;
 import java.util.List;
 
 
@@ -37,7 +36,7 @@ public class ItemController {
      * @return Возвращает объект, котрый добавил пользватель.
      */
     @PostMapping
-    public ItemDto addNewItem(@RequestHeader("X-Sharer-User-Id") Long userId,  @RequestBody @Valid ItemDto itemDto) {
+    public ItemDto addNewItem(@RequestHeader("X-Sharer-User-Id") Long userId,  @RequestBody ItemDto itemDto) {
         return itemService.addNewItem(userId, itemDto);
     }
 

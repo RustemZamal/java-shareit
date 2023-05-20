@@ -122,14 +122,14 @@ class BookingRepositoryTest {
 
     /**
      * Method under test:
-     * {@link BookingRepository#findDistinctBookingByBookerIdAndItemId(Long, Long)}
+     * {@link BookingRepository#findDistinctBookingByBooker(Long, Long, String)}
      */
     @Test
-    void findDistinctBookingByBookerIdAndItemId() {
-        List<Booking> actualBookings = bookingRepository
-                .findDistinctBookingByBookerIdAndItemId(booker.getId(), item.getId());
+    void findDistinctBookingByBooker() {
+        Booking actualBookings = bookingRepository
+                .findDistinctBookingByBooker(booker.getId(), item.getId(), BookingStatus.APPROVED.name()).get();
 
-        assertEquals(List.of(bookingCurrent, bookingPast), actualBookings);
+        assertEquals(bookingCurrent, actualBookings);
     }
 
     /**

@@ -267,7 +267,7 @@ class ItemServiceImplUnitTest {
      */
     @Test
     void addNewComment() {
-        when(bookingRepository.findDistinctBookingByBookerIdAndItemId(anyLong(), anyLong())).thenReturn(List.of(booking));
+        when(bookingRepository.findDistinctBookingByBooker(anyLong(), anyLong(), anyString())).thenReturn(Optional.of(booking));
         when(commentRepository.save(any())).thenReturn(comment);
 
         CommentDto actualComment = itemService.addNewComment(userId, itemId, commentDto);

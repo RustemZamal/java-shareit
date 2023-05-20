@@ -47,7 +47,7 @@ public class ItemRequestController {
     public ResponseEntity<Object> getAllItemRequests(
             @RequestHeader("X-Sharer-User-Id") Long userId,
             @RequestParam(defaultValue = "0") @Min(0) Integer from,
-            @RequestParam(defaultValue = "20") @Min(1) @Max(100) Integer size) {
+            @RequestParam(defaultValue = "10") @Min(1) @Max(100) Integer size) {
         log.info("Get all itemRequest, userId={}, from={}, size={}", userId, from, size);
         return requestClient.getAllItemRequests(from, size, userId);
     }

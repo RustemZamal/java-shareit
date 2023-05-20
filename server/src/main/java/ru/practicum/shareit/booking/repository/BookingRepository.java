@@ -9,14 +9,19 @@ import ru.practicum.shareit.booking.model.BookingStatus;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 public interface BookingRepository extends JpaRepository<Booking, Long> {
     List<Booking> findByItemIdAndItemOwnerIdAndStatusNotOrderByStartDesc(Long itemId, Long ownerId, BookingStatus status);
 
     @Query(value = "select distinct on(item_id, booker_id, status) b.* "
-            + "from bookings b where b.booker_id = :bookerId and b.item_id = :itemId",
+            + "from bookings b where b.booker_id = :bookerId and b.item_id = :itemId and b.status = :status",
             nativeQuery = true)
-    List<Booking> findDistinctBookingByBookerIdAndItemId(@Param("bookerId") Long bookerId, @Param("itemId") Long itemId);
+    Optional<Booking> findDistinctBookingByBooker(
+            @Param("bookerId") Long bookerId,
+            @Param("itemId") Long itemId,
+            @Param("status") String status
+    );
 
     List<Booking> findByBookerIdOrderByStartDesc(Long bookerId, Pageable pageable);
 

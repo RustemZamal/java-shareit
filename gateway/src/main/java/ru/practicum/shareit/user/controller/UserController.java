@@ -30,7 +30,7 @@ public class UserController {
      * @return Возвращает созданного польлзователя.
      */
     @PostMapping
-    public ResponseEntity<Object> creatUser(@Valid @RequestBody UserDto userDto) {
+    public ResponseEntity<Object> creatUser(@RequestBody @Valid UserDto userDto) {
         log.info("Creating user={}", userDto);
         return userClient.createUser(userDto);
     }
@@ -41,6 +41,7 @@ public class UserController {
      * @param userId идентификатор пользователя, который будет изменет.
      * @return Возварщает измененного пользователя.
      */
+
     @PatchMapping("/{userId}")
     public ResponseEntity<Object> updateUser(@RequestBody UserDto userDto, @PathVariable Long userId) {
         log.info("Update user={}, userId={}", userDto, userId);

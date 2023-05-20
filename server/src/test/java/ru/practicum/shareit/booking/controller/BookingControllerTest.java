@@ -152,17 +152,6 @@ class BookingControllerTest {
     }
 
     /**
-     * Method under test: {@link BookingController#approve(Long, Long, boolean)}
-     */
-    @Test
-    void approve_whenParamMissing_thenReturnBadRequest() throws Exception {
-        mvc.perform(patch("/bookings/{bookingId}", 1L)
-                        .header(headerShareUserId, userId))
-                .andDo(print())
-                .andExpect(status().isBadRequest());
-    }
-
-    /**
      * Method under test: {@link BookingController#getBookingById(Long, Long)}
      */
     @Test

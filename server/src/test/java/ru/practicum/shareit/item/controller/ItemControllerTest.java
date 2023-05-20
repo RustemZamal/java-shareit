@@ -5,14 +5,10 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.MethodArgumentNotValidException;
-import ru.practicum.shareit.exceptions.ErrorHandler;
 import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.ItemAllFieldsDto;
 import ru.practicum.shareit.item.dto.ItemDto;
@@ -22,17 +18,14 @@ import ru.practicum.shareit.util.OffsetPageRequest;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.anyString;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -54,9 +47,6 @@ class ItemControllerTest {
     @Autowired
     private MockMvc mvc;
 
-    @MockBean
-    private ErrorHandler errorHandler;
-
     private final String headerShareUserId = "X-Sharer-User-Id";
 
     private final Long userId = 1L;
@@ -67,13 +57,6 @@ class ItemControllerTest {
             1L,
             "Аккумуляторная дрель",
             "Аккумуляторная дрель + аккумулятор",
-            true,
-            2L);
-
-    private final ItemDto itemError = new ItemDto(
-            1L,
-            null,
-            null,
             true,
             2L);
 
@@ -118,34 +101,6 @@ class ItemControllerTest {
                 .andExpect(jsonPath("$.description", is(itemDto.getDescription())))
                 .andExpect(jsonPath("$.available", is(itemDto.getAvailable())));
         verify(itemService, times(1)).addNewItem(userId, itemDto);
-    }
-
-    /**
-     * Method under test: {@link ItemController#addNewItem(Long, ItemDto)}
-     */
-    @Test
-    void addNewItem_invalidData_returnsBadRequest() throws Exception {
-        mvc.perform(MockMvcRequestBuilders.post("/items/")
-                        .header(headerShareUserId, userId)
-                        .content(mapper.writeValueAsString(itemError))
-                        .characterEncoding(StandardCharsets.UTF_8)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON))
-                .andDo(print())
-                .andExpect(result -> assertTrue(result.getResolvedException() instanceof MethodArgumentNotValidException))
-                .andExpect(result -> {
-                    MethodArgumentNotValidException exception = (MethodArgumentNotValidException) result.getResolvedException();
-                    BindingResult bindingResult = exception.getBindingResult();
-                    List<String> errors = List.of("The name cannot be empty!", "The description cannot be empty!");
-                    List<String> actualErrors = bindingResult.getAllErrors().stream()
-                            .map(DefaultMessageSourceResolvable::getDefaultMessage)
-                            .collect(Collectors.toList());
-                    if (!errors.contains(actualErrors.get(0)) && !errors.contains(actualErrors.get(1))) {
-                        throw new AssertionError("Expected " + errors + ", but got " + actualErrors);
-                    }
-                })
-                .andExpect(status().isBadRequest());
-        verify(itemService, never()).addNewComment(userId, itemId, commentDtoError);
     }
 
     /**

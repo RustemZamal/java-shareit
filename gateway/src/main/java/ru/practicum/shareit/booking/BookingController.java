@@ -54,6 +54,7 @@ public class BookingController {
      * @param requestDto данные о вбронирования.
      * @return Возвращает объект бронировния.
      */
+    @Validated
     @PostMapping
     public ResponseEntity<Object> bookItem(@RequestHeader("X-Sharer-User-Id") long userId,
                                            @RequestBody @Valid BookItemRequestDto requestDto) {

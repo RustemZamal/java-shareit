@@ -141,21 +141,10 @@ public class ItemServiceImpl implements ItemService {
     @Override
     @Transactional
     public CommentDto addNewComment(Long bookerId, Long itemId, CommentDto commentDto) {
-        List<Booking> bookings = bookingRepository.findDistinctBookingByBookerIdAndItemId(bookerId, itemId);
-
-        if (bookings.isEmpty()) {
-            throw new InvalidDataException(
-                    String.format(
-                            "A user with ID=%d cannot leave a comment because he/she didn't rent this item.", bookerId));
-        }
-
-       Booking booking = bookings
-               .stream()
-               .filter(b -> b.getStatus().name().equals("APPROVED"))
-               .findAny()
-               .orElseThrow(() -> new InvalidDataException(
-                       String.format(
-                               "The user with ID=%d cannot leave a comment, as he/she has not yet given the item", bookerId)));
+        Booking booking = bookingRepository.findDistinctBookingByBooker(bookerId, itemId, BookingStatus.APPROVED.name())
+             .orElseThrow(() -> new InvalidDataException(
+                String.format(
+                        "A user with ID=%d cannot leave a comment because he/she didn't rent this item.", bookerId)));
 
         if (booking.getEnd().isAfter(LocalDateTime.now())) {
             throw new InvalidDataException("A comment can be left only after the end of the rent period.");
